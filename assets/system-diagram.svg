@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 350" role="img" aria-labelledby="title desc">
+<title id="title">Proposed smart automatic gate system block diagram</title>
+<desc id="desc">HC-SR04 ultrasonic sensor measures distance, Arduino Uno runs a distance-based control algorithm, SG90 servo moves a lightweight model gate.</desc>
+<style>text{font-family:Arial,sans-serif;fill:#203648}.lbl{font-size:23px;font-weight:700}.sub{font-size:16px}.arrow{stroke:#34799f;stroke-width:4;fill:none;marker-end:url(#a)}.b{fill:#f4f8fc;stroke:#83adc4;stroke-width:2}.note{font-size:16px;fill:#547081}</style>
+<defs><marker id="a" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0L9,3L0,6" fill="#34799f"/></marker></defs>
+<rect x="20" y="68" width="248" height="136" rx="11" class="b"/><text x="144" y="115" text-anchor="middle" class="lbl">HC-SR04</text><text x="144" y="146" text-anchor="middle" class="sub">Ultrasonic sensor</text><text x="144" y="174" text-anchor="middle" class="sub">Distance input</text>
+<rect x="377" y="68" width="245" height="136" rx="11" class="b"/><text x="500" y="114" text-anchor="middle" class="lbl">Arduino Uno</text><text x="500" y="145" text-anchor="middle" class="sub">Threshold + delay</text><text x="500" y="174" text-anchor="middle" class="sub">Control algorithm</text>
+<rect x="731" y="68" width="245" height="136" rx="11" class="b"/><text x="854" y="114" text-anchor="middle" class="lbl">SG90 servo</text><text x="854" y="145" text-anchor="middle" class="sub">Rotates gate arm</text><text x="854" y="174" text-anchor="middle" class="sub">Physical output</text>
+<path class="arrow" d="M269 136H372"/><path class="arrow" d="M622 136H724"/>
+<text x="500" y="252" text-anchor="middle" class="note">Planned system design — wiring and complete behavior still to be tested</text>
+<rect x="220" y="279" width="558" height="45" rx="9" fill="#e8f6f3"/><text x="500" y="307" text-anchor="middle" class="sub">Object nearby → open • Area clear for 2.5 s → close</text>
+</svg>
