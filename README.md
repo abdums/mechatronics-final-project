@@ -48,3 +48,7 @@ Then enable Pages in the repository settings using the instructions above.
 - [GitHub Pages deployment instructions](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
 
 Copyright: original site design generated for this student project. Reference external tutorials by link rather than copying their content.
+
+
+## November 23 Check-in 1 update
+Tested HC-SR04 and SG90 individually and integrated in the classroom breadboard prototype. Documentation assets are in `assets/`, with an 18-second integration video and two test images. Physical barrier arm is planned for Check-in 2. The code was prepared with ChatGPT assistance; verify against local tested sketch.
