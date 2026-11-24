@@ -21,20 +21,20 @@
 <li><a href="#code">Code</a></li>
 <li><a href="#reflection">Reflection and Future Improvements</a></li>
 <li><a href="#checkin-1">Project Progress Check In #1 (due November 23)</a></li>
-<li><a href="#checkin-2">Project Progress Check In #2 (due November 30)</a></li>
+<li><a href="#checkin-2">Project Progress Check In #2 (November 30)</a></li>
 </ul></nav>
 
 <section id="project-description"><h2>Project Description</h2>
-<p>The <strong>Smart Automatic Gate</strong> is an Arduino-based model designed to open a lightweight barrier when an object approaches. The planned system uses an HC-SR04 ultrasonic distance sensor to detect objects and an SG90 micro servo to raise or lower a gate arm.</p>
-<p><strong>Minimum viable project:</strong> detect objects approximately 15 cm from the sensor, open the gate automatically, keep it open while the object is nearby, and close after the detection area has remained clear for a short delay.</p>
-<p><strong>Stretch goals:</strong> LED status indicators, a manual pushbutton override, and more stable distance measurements to prevent unnecessary gate movement.</p>
-<p class="muted small">Project status (November 23): HC-SR04 distance sensing and SG90 servo actuation have been tested separately and integrated in an Arduino breadboard prototype. The final physical gate arm has not yet been built.</p>
+<p>For my final project, I’m building a small automatic parking barrier. An HC-SR04 ultrasonic sensor measures how close an object is, and an Arduino Uno moves an SG90 servo when the object enters the detection range. The electronic control is working; the physical barrier arm is still in progress.</p>
+<p><strong>My goal:</strong> detect objects approximately 15 cm from the sensor, open the gate automatically, keep it open while the object is nearby, and close after the detection area has remained clear for a short delay.</p>
+<p><strong>Ideas to add later:</strong> LED status indicators, a manual pushbutton override, and more stable distance measurements to prevent unnecessary gate movement.</p>
+<p class="muted small">Status — November 23: HC-SR04 distance sensing and SG90 servo actuation have been tested separately and integrated in an Arduino breadboard prototype. The final physical gate arm has not yet been built.</p>
 </section>
 
 <section id="video-demo"><h2>Video Demo</h2>
-<p><strong>November 23 integration test:</strong> the HC-SR04 and SG90 are connected to the Arduino, and a hand is moved toward and away from the ultrasonic sensor to demonstrate distance-triggered control. This is an electronics prototype; a physical barrier arm will be added later.</p>
+<p><strong>November 23 integration test:</strong> This clip shows the Arduino, ultrasonic sensor, and servo connected for a distance-based control test. The barrier arm has not been attached yet.</p>
 <video controls playsinline preload="metadata" style="width:100%;max-width:380px;border-radius:8px;background:#111" src="assets/integration-test.mp4">Your browser does not support inline video. <a href="assets/integration-test.mp4">Open the demo video</a>.</video>
-<p class="small muted">Integration-test clip: approximately 18 seconds. Final assembled-gate demonstration will be added later.</p>
+<p class="small muted">Integration-test clip: approximately 18 seconds. I will add the complete gate demonstration after assembling the barrier arm.</p>
 </section>
 
 <section id="system-diagram"><h2>System Diagram</h2>
@@ -43,7 +43,7 @@
 </section>
 
 <section id="circuit-information"><h2>Circuit Information</h2>
-<p>The table below lists the connections used in the November 23 sensor-and-servo prototype. A hand-drawn schematic and mechanical gate arm will be added for the final build.</p>
+<p>The table below lists the connections used in the November 23 sensor-and-servo prototype. I will draw the final schematic and attach the physical gate arm as the build progresses.</p>
 <table><thead><tr><th>Component</th><th>Pin / connection</th><th>Purpose</th></tr></thead><tbody>
 <tr><td>HC-SR04 VCC / GND</td><td>5V / GND</td><td>Sensor power</td></tr>
 <tr><td>HC-SR04 TRIG</td><td>Arduino D10</td><td>Send ultrasonic pulse</td></tr>
@@ -51,127 +51,40 @@
 <tr><td>SG90 orange (signal)</td><td>Arduino D9</td><td>Position control</td></tr>
 <tr><td>SG90 red / brown</td><td>Arduino 5V / GND</td><td>Servo power and common ground</td></tr>
 </tbody></table>
-<div class="note"><strong>Hand-drawn schematic:</strong> prepare a hand-drawn schematic for the final gate assembly. The instructor prefers hand-drawn diagrams. A lightly loaded SG90 can often be powered from the Uno, but use a separate regulated 5V supply if the board resets or the servo causes voltage dips; always share ground.</div>
-<p><strong>Planned parts:</strong> Arduino Uno, HC-SR04 ultrasonic sensor, SG90 9g servo, breadboard, jumper wires, USB cable, and cardboard or a lightweight model gate arm. LEDs, resistors, and pushbutton are optional stretch goals.</p>
+<div class="note"><strong>Hand-drawn schematic:</strong> A schematic will accompany the final gate assembly. A lightly loaded SG90 can often be powered from the Uno, but use a separate regulated 5V supply if the board resets or the servo causes voltage dips; always share ground.</div>
+<p><strong>Parts:</strong> Arduino Uno, HC-SR04 ultrasonic sensor, SG90 9g servo, breadboard, jumper wires, USB cable, and cardboard or a lightweight model gate arm. LEDs, resistors, and pushbutton are optional stretch goals.</p>
 </section>
 
 <section id="code"><h2>Code</h2>
-<p>The <a href="firmware/smart_gate.ino">Arduino prototype sketch</a> uses the Servo library and ultrasonic pulse timing to actuate the SG90. The opening threshold is 15 cm; clearing begins at 20 cm; and closing is delayed by 2 seconds once the sensor reports a clear path. These are the settings in the integration sketch used as our test reference; verify exact local source before final submission.</p>
-<details><summary>View Arduino integration sketch</summary><div><pre><code>/*
-  Smart Automatic Gate — HC-SR04 / SG90 Integration Prototype
-  Mechatronics Final Project — Fall 2026
-
-  Wiring:
-    HC-SR04 TRIG -&gt; D10, ECHO -&gt; D11, VCC -&gt; 5V, GND -&gt; GND
-    SG90 signal -&gt; D9, red -&gt; 5V, brown -&gt; GND
-
-  AI assistance: ChatGPT (OpenAI) helped draft and debug the control logic.
-  Libraries: Arduino Servo library. Ultrasonic readings use pulseIn().
-  Prototype only — not a safety-rated real gate.
-  NOTE: No echo is treated as a clear path by this classroom test sketch.
-        A real gate must fail safe on missing sensor data.
-*/
-#include &lt;Servo.h&gt;
-
-const int trigPin = 10;
-const int echoPin = 11;
-const int servoPin = 9;
-const int closedAngle = 0;
-const int openAngle = 90;
-const float openDistance = 15.0;
-const float clearDistance = 20.0;
-const unsigned long closeDelay = 2000;
-
-Servo gateServo;
-bool gateOpen = false;
-bool clearTimerStarted = false;
-unsigned long clearStartTime = 0;
-
-void setup() {
-  pinMode(trigPin, OUTPUT);
-  pinMode(echoPin, INPUT);
-  digitalWrite(trigPin, LOW);
-  Serial.begin(9600);
-  gateServo.attach(servoPin);
-  gateServo.write(closedAngle);
-  Serial.println(&quot;Smart Automatic Gate Started&quot;);
-  Serial.println(&quot;Gate: CLOSED&quot;);
-}
-
-float measureDistance() {
-  digitalWrite(trigPin, LOW);
-  delayMicroseconds(2);
-  digitalWrite(trigPin, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
-  unsigned long duration = pulseIn(echoPin, HIGH, 25000UL);
-  if (duration == 0) return -1;
-  return duration * 0.0343 / 2.0;
-}
-
-void loop() {
-  float distance = measureDistance();
-  if (distance &lt; 0) {
-    Serial.println(&quot;No echo detected&quot;);
-  } else {
-    Serial.print(&quot;Distance: &quot;);
-    Serial.print(distance);
-    Serial.println(&quot; cm&quot;);
-  }
-
-  if (distance &gt; 0 &amp;&amp; distance &lt;= openDistance) {
-    clearTimerStarted = false;
-    if (!gateOpen) {
-      gateServo.write(openAngle);
-      gateOpen = true;
-      Serial.println(&quot;GATE OPENING&quot;);
-    }
-  } else if (gateOpen &amp;&amp; (distance &lt; 0 || distance &gt;= clearDistance)) {
-    if (!clearTimerStarted) {
-      clearStartTime = millis();
-      clearTimerStarted = true;
-      Serial.println(&quot;Path clear - waiting 2 seconds&quot;);
-    }
-    if (millis() - clearStartTime &gt;= closeDelay) {
-      gateServo.write(closedAngle);
-      gateOpen = false;
-      clearTimerStarted = false;
-      Serial.println(&quot;GATE CLOSING&quot;);
-    }
-  } else {
-    clearTimerStarted = false;
-  }
-  delay(100);
-}
-</code></pre></div></details>
-<p class="small muted">AI acknowledgement: ChatGPT (OpenAI) assisted with drafting and debugging the prototype sketch; the Arduino Servo library is also used.</p>
+<p>The Arduino program reads the ultrasonic sensor and controls the SG90 servo based on distance. It opens the gate when an object is within 15 cm. After the distance is above 20 cm for two seconds, it returns the servo to the closed position.</p>
+<p><a href="firmware/smart_gate.ino" download>View or download the Arduino sketch (.ino)</a></p>
 </section>
 
 <section id="reflection"><h2>Reflection and Future Improvements</h2>
-<p><strong>Interim reflection:</strong> The SG90 servo worked with the Servo Sweep example, and the HC-SR04 returned distance readings in centimeters in the Serial Monitor. We then combined both components in a breadboard prototype and recorded a short integration demonstration. Testing each component separately made integration easier to troubleshoot.</p>
-<p><strong>Future improvements:</strong> attach a lightweight gate arm; validate repeatable open/close operation with the arm installed; filter noisy or missing sensor readings; optionally add LED indicators or a manual override. The classroom model is not suitable for use as a real access-control gate.</p>
+<p><strong>What I learned:</strong> I first tested the SG90 with the Arduino Servo Sweep example, then checked the HC-SR04 readings in the Serial Monitor. After each part worked on its own, I connected them to the same Arduino and recorded the response. Testing one part at a time made it much easier to identify wiring and code issues.</p>
+<p><strong>Next improvements:</strong> attach a lightweight gate arm; validate repeatable open/close operation with the arm installed; filter noisy or missing sensor readings; optionally add LED indicators or a manual override. This prototype is only a demonstration model, not a gate for real-world access control.</p>
 </section>
 
 <section id="checkin-1"><details open><summary>Project Progress Check In #1 (November 23)</summary><div>
 <h3>Progress and results</h3>
-<p>The project is on schedule and has advanced beyond the initially planned individual component tests. The SG90 servo was tested using Arduino's Servo Sweep example. The HC-SR04 sensor was connected to the Arduino Uno and tested separately: the Serial Monitor displayed changing distance measurements as a hand moved near the sensor. After both individual tests, the sensor and servo were wired together and an approximately 18-second integration demonstration was recorded. The physical barrier arm has not yet been built.</p>
+<p>The project is on schedule, and I made more progress than I originally expected at this stage. I tested the SG90 with Arduino's Servo Sweep example. I also tested the HC-SR04 separately: the Serial Monitor displayed changing distance measurements as a hand moved near the sensor. After those tests, I connected the sensor and servo together and recorded an approximately 18-second demonstration. The physical barrier arm has not yet been built.</p>
 <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
 <figure style="margin:6px 0;flex:1 1 240px"><img src="assets/ultrasonic-test-setup.jpg" alt="Arduino Uno wired to HC-SR04 for distance sensor test" style="width:100%;max-width:440px;border-radius:6px"/><figcaption class="small muted">HC-SR04 sensor and Arduino Uno test setup</figcaption></figure>
 <figure style="margin:6px 0;flex:1 1 240px"><img src="assets/ultrasonic-measure.jpg" alt="Arduino Serial Monitor displaying live HC-SR04 distance measurements" style="width:100%;max-width:440px;border-radius:6px"/><figcaption class="small muted">Serial Monitor showing changing distance measurements</figcaption></figure>
 </div>
 <p><strong>Video evidence:</strong> See the integration-test recording in the <a href="#video-demo">Video Demo</a> section.</p>
 <h3>Research and comparison</h3>
-<p>SunFounder's <a href="https://www.sunfounder.com/pages/arduino-automatic-barrier-gate-project-with-ultrasonic-sensor-v2" target="_blank" rel="noopener noreferrer">Arduino Automatic Barrier Gate Project with Ultrasonic Sensor V2</a> shows a similar sensor-controlled servo barrier, with a traffic-light LED module and display. Our current prototype uses an HC-SR04 and SG90 with simpler distance-triggered control, without indicators or a completed gate arm. This source provides ideas for later improvements, but the commercial tutorial is not evidence that our own mechanical system has been completed.</p>
+<p>SunFounder's <a href="https://www.sunfounder.com/pages/arduino-automatic-barrier-gate-project-with-ultrasonic-sensor-v2" target="_blank" rel="noopener noreferrer">Arduino Automatic Barrier Gate Project with Ultrasonic Sensor V2</a> shows a similar sensor-controlled servo barrier, with a traffic-light LED module and display. My current design uses an HC-SR04 and SG90 with basic distance-triggered control, without indicators or a completed gate arm. I may add LED status indicators after the gate mechanism is complete.</p>
 <p class="small muted">Reference: SunFounder, <em>Arduino Automatic Barrier Gate Project with Ultrasonic Sensor V2</em>, accessed November 23, 2026.</p>
 <h3>Schedule, risks, and next steps</h3>
-<p>We met the Check-in #1 goal of testing the sensor and servo and additionally recorded an integrated demonstration. Before Check-in #2 on November 30, we plan to attach a lightweight gate arm, test repeatable opening and closing, monitor for unreliable distance readings, and revise the design if the motor struggles under load. Main risks are ultrasonic measurement noise, insufficient servo power, and mounting/alignment of the gate arm.</p>
+<p>I met the Check-in #1 goal of testing both components and also got the distance sensor and servo running together. Before Check-in #2 on November 30, I plan to attach a lightweight gate arm, test repeated opening and closing, and adjust the design if the motor struggles under load. Main risks are ultrasonic measurement noise, insufficient servo power, and mounting/alignment of the gate arm.</p>
 </div></details></section>
 
-<section id="checkin-2"><details><summary>Project Progress Check In #2 (due November 30)</summary><div>
+<section id="checkin-2"><details><summary>Project Progress Check In #2 (November 30)</summary><div>
 <p><strong>Planned next checkpoint:</strong> assemble and test the lightweight physical gate arm; verify sensor-triggered opening and delayed closing with the mechanism attached; and assess reliability, sensor filtering, power requirements, and any revised goals.</p>
-<div class="placeholder">Add November 30 photographs, test results, and observations after testing. Do not treat these as completed yet.</div>
+
 </div></details></section>
 
-<footer>Smart Automatic Gate · Basic E/Mech I · Fall 2026 · Student project template based on the instructor's published page layout, not a copy of its source code.</footer>
+<footer>Smart Automatic Gate · Basic E/Mech I · Fall 2026</footer>
 </main>
 </body></html>

@@ -6,7 +6,7 @@
     HC-SR04 TRIG -> D10, ECHO -> D11, VCC -> 5V, GND -> GND
     SG90 signal -> D9, red -> 5V, brown -> GND
 
-  AI assistance: ChatGPT (OpenAI) helped draft and debug the control logic.
+  Attribution: Arduino Servo example; ChatGPT assisted formatting and debugging.
   Libraries: Arduino Servo library. Ultrasonic readings use pulseIn().
   Prototype only — not a safety-rated real gate.
   NOTE: No echo is treated as a clear path by this classroom test sketch.
